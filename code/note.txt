@@ -1,0 +1,4 @@
+To run this Matlab code  you need to type below in Matlab command window:
+        F=main();
+        [MI,var]=F.EntC(V,sigma,d)
+
