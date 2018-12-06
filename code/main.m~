@@ -140,7 +140,7 @@ function QYR=P_tr(V,sigma,d, ratio)
     disp('Calculating conditional distribution PTR')
     for j=-10:0.1:10
    % QY(i)=integral(@(x)pdf('InverseGaussian',x,mu,lambda).*pdf('InverseGaussian',x+j,mu,lambda),0,50);
-    QY(i)=integral(@(x)normpdf(x,mu,mu.^3/lambda).*normpdf(x+j,mu,mu.^3/lambda),0,50);
+   QY(i)=integral(@(x)normpdf(x,mu,lambda).*normpdf(x+j,mu,lambda),0,50);
     i=i+1;
     end
     QYR=QY;
@@ -155,8 +155,7 @@ function QYR=P_tmr(V,sigma,d, ratio)
     i=1;
     disp('Calculating conditional distribution PTMR')
     for j=-50:0.1:50
-    %QY(i)=integral(@(x)pdf('InverseGaussian',x,mu,lambda).*pdf('InverseGaussian',x+j,mu,lambda),0,50);
-    QY(i)=integral(@(x)normpdf(x,mu,mu.^3/lambda).*normpdf(x+j,mu,mu.^3/lambda),0,50);
+    QY(i)=integral(@(x)pdf('InverseGaussian',x,mu,lambda).*pdf('InverseGaussian',x+j,mu,lambda),0,50);
     i=i+1;
     end
     QYR=QY;    
@@ -193,16 +192,14 @@ function QYR=P_di(V,sigma,d, ratio)
     lambda=d^2/sigma^2;
     %QD time required to travel direct channel
     x=0:0.1:50;
-   % QD=pdf('InverseGaussian',x,mu,lambda);
-    QD=normpdf(x,mu,mu.^3/lambda);
+    QD=pdf('InverseGaussian',x,mu,lambda);
     %QI time required to travel indirect channel
     d=d*ratio/2;
     mu= d/V;
     lambda=d^2/sigma^2;
     i=1;
     for j=0:0.1:50
-    %QI(i)=integral(@(x)pdf('InverseGaussian',j-x,mu,lambda).*pdf('InverseGaussian',x,mu,lambda),0,50);
-    QI(i)=integral(@(x)normpdf(j-x,mu,mu.^3/lambda).*normpdf(x,mu,mu.^3/lambda),0,50);
+    QI(i)=integral(@(x)pdf('InverseGaussian',j-x,mu,lambda).*pdf('InverseGaussian',x,mu,lambda),0,50);
     i=i+1;
     end
     %conditional distrinution
