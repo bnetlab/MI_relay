@@ -25,11 +25,11 @@ end
 function [EntC,var] =MI_relay(V,sigma,d, ratio)
     % The main function
     % Source distribution : 
-    X=[0:0.1:10];
-    xplot=[-10:0.1:10];
+    X=[0:0.01:10];
+    xplot=[-10:0.01:10];
     Pa1 = normpdf(X,1.5,sqrt(0.1656));
  %   Pa1 = normpdf(X,2.5,sqrt(0.25));
-    Pa=zeros(1,100);
+    Pa=zeros(1,1000);
     Pa2=[Pa Pa1] ; 
     plot(xplot,Pa2, 'LineWidth',2)
     hold on;
@@ -49,7 +49,7 @@ function [EntC,var] =MI_relay(V,sigma,d, ratio)
 %     conditional distrinution PID 
     % PID is just mirror reflection of PDI about middle point 
     % because del tau is independent of first arrival time (t)
-    PID=[fliplr(PDI(202:end)),PDI(201),fliplr(PDI(1:200))];
+    PID=[fliplr(PDI(2002:end)),PDI(2001),fliplr(PDI(1:2000))];
     sum(PID)
     %plot(PID, 'LineWidth',2)
     %Total conditional distibution P
@@ -90,20 +90,20 @@ function EntC=muinfo(QYR,Pa2)
     % Pa2 length -10 sec to 10 sec
     %calculate h(Y|X)
     EntC1=0;
-    for i=1:201
-        EntC1=EntC1-0.1*Pa2(i)*0.1*sum(QYR(i:200+i).*mylog2(QYR(i:200+i)));
+    for i=1:2001
+        EntC1=EntC1-0.01*Pa2(i)*0.01*sum(QYR(i:2000+i).*mylog2(QYR(i:2000+i)));
     end    
     % calculate p(Y)
-    for i=1:201
-        Q12=QYR(i:i+200);
-        M10(i)= 0.1* sum(fliplr(Q12).*Pa2);
+    for i=1:2001
+        Q12=QYR(i:i+2000);
+        M10(i)= 0.01* sum(fliplr(Q12).*Pa2);
     end	
-    xplot=[-10:0.1:10];
+    xplot=[-10:0.01:10];
     plot( xplot,M10,'LineWidth',2)
     %sum(M10)
     hold on 
 	% claculate h(Y)
-    EntC2=0.1*sum(-(M10(M10>0).*(mylog2(M10(M10>0))))); 
+    EntC2=0.01*sum(-(M10(M10>0).*(mylog2(M10(M10>0))))); 
     %EntC1
     %EntC2
 	% calculate MI
@@ -115,8 +115,8 @@ end
 %     % QYR length -10 sec to 10 sec 
 %     % Pa2 length -5 sec to 5 sec
 %     %calculate h(Y|X)
-% %     Pa2=0.1*Pa2;
-% %     QYR=QYR*0.1;
+% %     Pa2=0.01*Pa2;
+% %     QYR=QYR*0.01;
 %     EntC1=0;
 %     for i=1:100
 %         EntC1=EntC1-Pa2(i)*sum(QYR(i:100+i).*mylog2(QYR(i:100+i)));
@@ -141,7 +141,7 @@ function QYR=P_tr(V,sigma,d, ratio)
     %conditional distrinution
     i=1;
     disp('Calculating conditional distribution PTR')
-    for j=-20:0.1:20
+    for j=-20:0.01:20
     QY(i)=integral(@(x)pdf('InverseGaussian',x,mu,lambda).*pdf('InverseGaussian',x+j,mu,lambda),0,50);
    % QY(i)=integral(@(x)normpdf(x,mu,mu.^3/lambda).*normpdf(x+j,mu,mu.^3/lambda),0,50);
     i=i+1;
@@ -157,7 +157,7 @@ function QYR=P_tmr(V,sigma,d, ratio)
     %conditional distrinution
     i=1;
     disp('Calculating conditional distribution PTMR')
-    for j=-50:0.1:50
+    for j=-50:0.01:50
     QY(i)=integral(@(x)pdf('InverseGaussian',x,mu,lambda).*pdf('InverseGaussian',x+j,mu,lambda),0,50);
     %QY(i)=integral(@(x)normpdf(x,mu,mu.^3/lambda).*normpdf(x+j,mu,mu.^3/lambda),0,50);
     i=i+1;
@@ -165,13 +165,13 @@ function QYR=P_tmr(V,sigma,d, ratio)
     QYR=QY;    
     %looping for second channel  
     for ii=1
-        X=[-500:1:500];
+        X=[-5000:1:5000];
         ind=1;
         clear Q10
-        for value = -200:1:200
+        for value = -2000:1:2000
             count=1;
-            for i=1:1001 %%checking for sum of time deviation in both path is del t
-                for j=1:1001
+            for i=1:10001 %%checking for sum of time deviation in both path is del t
+                for j=1:10001
                     if (X(i)+X(j)==value)
                         Xa(count)=i;
                         Ya(count)=j;
@@ -184,9 +184,9 @@ function QYR=P_tmr(V,sigma,d, ratio)
             clear Xa
             clear Ya
         end
-        %Q10= 0.1*[Q10 fliplr(Q10(1:100))];
+        %Q10= 0.01*[Q10 fliplr(Q10(1:100))];
         trapz(Q10);
-        QYR=0.1*Q10;
+        QYR=0.01*Q10;
     end
 end
 
@@ -195,7 +195,7 @@ function QYR=P_di(V,sigma,d, ratio)
     mu= d/V;
     lambda=d^2/sigma^2;
     %QD time required to travel direct channel
-    x=0:0.1:50;
+    x=0:0.01:50;
     QD=pdf('InverseGaussian',x,mu,lambda);
     %QD=normpdf(x,mu,mu.^3/lambda);
     %QI time required to travel indirect channel
@@ -203,20 +203,20 @@ function QYR=P_di(V,sigma,d, ratio)
     mu= d/V;
     lambda=d^2/sigma^2;
     i=1;
-    for j=0:0.1:50  %% check it
+    for j=0:0.01:50  %% check it
     QI(i)=integral(@(x)pdf('InverseGaussian',j-x,mu,lambda).*pdf('InverseGaussian',x,mu,lambda),0,50);
     %QI(i)=integral(@(x)normpdf(j-x,mu,mu.^3/lambda).*normpdf(x,mu,mu.^3/lambda),0,50);
     i=i+1;
     end
     %conditional distrinution
     disp('Calculating conditional distribution PDI and PID')
-    X=[0:1:500];
+    X=[0:1:5000];
     ind=1;
     clear Q10
-    for value = -200:1:200
+    for value = -2000:1:2000
        count=1;
-       for i=1:501 %%checking for sum of time deviation in both path is del t
-            for j=1:501
+       for i=1:5001 %%checking for sum of time deviation in both path is del t
+            for j=1:5001
                 if (X(i)-X(j)==value)
                     Xa(count)=i;
                     Ya(count)=j;
@@ -224,12 +224,12 @@ function QYR=P_di(V,sigma,d, ratio)
                 end
             end
         end
-        QYR(ind)=0.1*sum(QD(Xa).*QI(Ya));
+        QYR(ind)=0.01*sum(QD(Xa).*QI(Ya));
         ind=ind+1;
         clear Xa
         clear Ya
     end
-    %QYR=0.1*QYR;
+    %QYR=0.01*QYR;
     %QYR=QYR(401:601);
 end
 
@@ -239,10 +239,10 @@ end
 
 function [var]=var_mean(Y)
     % calculate output variance
-     X=[-20:0.1:20];
-     avg=0.1*trapz(X.*Y);
+     X=[-20:0.01:20];
+     avg=0.01*trapz(X.*Y);
      X1=(X-avg).^2;
-     var=0.1*trapz(X1.*Y);
+     var=0.01*trapz(X1.*Y);
 end
 
 
