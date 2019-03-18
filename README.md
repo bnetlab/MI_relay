@@ -1,2 +1,3 @@
 # MI_relay
-Mutual Information of Relay Channel
+Mutual Information of Molecular Relay Channel with inverse gaussian noise.
+
